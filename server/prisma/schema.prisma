@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model Harvest {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  quantity  Float?
+  loggedBy  Int
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement())
+  tgId      Int?
+  name      String
+}
