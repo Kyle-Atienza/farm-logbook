@@ -16,6 +16,6 @@ model Harvest {
 
 model Employee {
   id        Int      @id @default(autoincrement())
-  tgId      Int?
+  tgId      BigInt?
   name      String
 }

@@ -13,9 +13,8 @@ export async function getHarvestById(id: string | number) {
 
 export async function createHarvest(data: any) {
     const payload: any = {
-        name: data.name ?? null,
         quantity: data.quantity != null ? Number(data.quantity) : null,
-        notes: data.notes ?? null
+        loggedBy: data.loggedBy != null ? Number(data.loggedBy) : null,
     };
     return prisma.harvest.create({ data: payload });
 }
