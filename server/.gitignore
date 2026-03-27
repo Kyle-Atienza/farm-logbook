@@ -1,0 +1,21 @@
+node_modules/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Prisma artifacts
+.prisma/
+prisma/dev.db
