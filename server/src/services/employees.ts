@@ -18,6 +18,12 @@ export async function getEmployeeById(id: string | number) {
     return serializeEmployee(row);
 }
 
+export async function getEmployeeByTgId(tgId: string | number | bigint) {
+    const val = tgId == null ? null : BigInt(String(tgId));
+    const row = await prisma.employee.findFirst({ where: { tgId: val } });
+    return serializeEmployee(row);
+}
+
 export async function createEmployee(data: any) {
     const payload: any = {
         tgId: data.tgId != null ? String(data.tgId) : null,

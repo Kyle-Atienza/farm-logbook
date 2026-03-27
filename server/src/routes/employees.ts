@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import {
     getAllEmployees,
     getEmployeeById,
+    getEmployeeByTgId,
     createEmployee,
     updateEmployeeById,
     deleteEmployeeById
@@ -12,6 +13,13 @@ const router = Router();
 router.get('/', async (req: Request, res: Response) => {
     const data = await getAllEmployees();
     res.json(data);
+});
+
+// lookup by Telegram ID (tgId)
+router.get('/tg/:tgId', async (req: Request, res: Response) => {
+    const e = await getEmployeeByTgId(req.params.tgId);
+    if (!e) return res.status(404).json({ error: 'Employee not found' });
+    res.json(e);
 });
 
 router.get('/:id', async (req: Request, res: Response) => {

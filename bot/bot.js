@@ -1,5 +1,8 @@
-import { Bot, Context, session } from "grammy";
+import { Bot, session } from "grammy";
 import { Menu } from "@grammyjs/menu";
+
+const BASE_URL = 'http://localhost:3000';
+
 // Create an instance of the `Bot` class and pass your bot token to it.
 const bot = new Bot("8588782715:AAFaFdc7ckXcWRcexdBZK17kUdXYif4FaFQ"); // <-- put your bot token between the ""
 // Use session middleware
@@ -9,21 +12,21 @@ bot.use(session({ initial: () => ({ state: 'idle' }) }));
 // Handle the /start command.
 const menu = new Menu("my-menu-identifier")
     .text("Log Harvests", (ctx) => {
-    ctx.session.state = 'waiting_for_harvest_amount';
-    ctx.reply("How much did you harvest for today? Please input in grams.");
-}).row()
+        ctx.session.state = 'waiting_for_harvest_amount';
+        ctx.reply("How much did you harvest for today? Please input in grams.");
+    }).row()
     .text("View Records", (ctx) => {
-    ctx.session.state = 'waiting_for_view_option';
-    ctx.reply("Choose an option:", {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: "Past 7 days", callback_data: "view_7days" }],
-                [{ text: "Harvest per week", callback_data: "view_week" }],
-                [{ text: "Harvest per month", callback_data: "view_month" }]
-            ]
-        }
+        ctx.session.state = 'waiting_for_view_option';
+        ctx.reply("Choose an option:", {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "Past 7 days", callback_data: "view_7days" }],
+                    [{ text: "Harvest per week", callback_data: "view_week" }],
+                    [{ text: "Harvest per month", callback_data: "view_month" }]
+                ]
+            }
+        });
     });
-});
 // Make it interactive.
 bot.use(menu);
 bot.command("start", async (ctx) => {
@@ -60,7 +63,7 @@ bot.on("callback_query:data", (ctx) => {
     ctx.answerCallbackQuery();
 });
 // Handle other messages.
-bot.on("message", (ctx) => {
+bot.on("message", async (ctx) => {
     const session = ctx.session;
     if (session.state === 'waiting_for_harvest_amount') {
         const amount = parseFloat(ctx.message.text);
@@ -75,8 +78,41 @@ bot.on("message", (ctx) => {
     else if (session.state === 'waiting_for_confirmation') {
         const text = ctx.message.text.toLowerCase();
         if (text === 'yes') {
-            // tbc send to BE
-            ctx.reply("Harvest logged successfully!");
+
+            const createHarvest = async (tgId, quantity) => {
+                let employeeId;
+
+                const employee = await fetch(`${BASE_URL}/employees/tg/${tgId}`)
+                if (!employee.ok) {
+                    const newEmployee = await fetch(`${BASE_URL}/employees`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tgId })
+                    });
+                    if (!newEmployee.ok) throw new Error('Failed to create employee');
+                    const createdEmployee = await newEmployee.json();
+                    employeeId = createdEmployee.id;
+                } else {
+                    const existingEmployee = await employee.json();
+                    employeeId = existingEmployee.id;
+                }
+
+                const harvestResponse = await fetch(`${BASE_URL}/harvests`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loggedBy: employeeId, quantity })
+                });
+                if (!harvestResponse.ok) throw new Error('Failed to create harvest');
+                return await harvestResponse.json();
+            }
+
+            const createdHarvest = await createHarvest(ctx.from.id, session.harvestAmount);
+
+            ctx.reply(`Harvest logged successfully!\n
+Quantity(g): ${createdHarvest.quantity}
+Date: ${new Date(createdHarvest.createdAt).toLocaleDateString()}
+Time: ${new Date(createdHarvest.createdAt).toLocaleTimeString()}`
+            );
             session.state = 'idle';
         }
         else if (text === 'no') {
