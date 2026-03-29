@@ -1,10 +1,14 @@
 import { Bot, session } from "grammy";
 import { Menu } from "@grammyjs/menu";
 
-const BASE_URL = 'http://localhost:3000';
-
 // Create an instance of the `Bot` class and pass your bot token to it.
-const bot = new Bot("8588782715:AAFaFdc7ckXcWRcexdBZK17kUdXYif4FaFQ"); // <-- put your bot token between the ""
+const token = process.env.BOT_TOKEN;
+if (!token) throw new Error("BOT_TOKEN is unset");
+
+const bot = new Bot(token); // <-- put your bot token between the ""
+
+export default webhookCallback(bot, "https");
+
 // Use session middleware
 bot.use(session({ initial: () => ({ state: 'idle' }) }));
 // You can now register listeners on your bot object `bot`.
@@ -82,9 +86,9 @@ bot.on("message", async (ctx) => {
             const createHarvest = async (tgId, quantity) => {
                 let employeeId;
 
-                const employee = await fetch(`${BASE_URL}/employees/tg/${tgId}`)
+                const employee = await fetch(`${process.env.BASE_URL}/employees/tg/${tgId}`)
                 if (!employee.ok) {
-                    const newEmployee = await fetch(`${BASE_URL}/employees`, {
+                    const newEmployee = await fetch(`${process.env.BASE_URL}/employees`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ tgId })
@@ -97,7 +101,7 @@ bot.on("message", async (ctx) => {
                     employeeId = existingEmployee.id;
                 }
 
-                const harvestResponse = await fetch(`${BASE_URL}/harvests`, {
+                const harvestResponse = await fetch(`${process.env.BASE_URL}/harvests`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ loggedBy: employeeId, quantity })
