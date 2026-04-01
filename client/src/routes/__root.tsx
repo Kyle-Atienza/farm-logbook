@@ -3,16 +3,13 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import Footer from '../components/Footer'
-import Header from '../components/Header'
-
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { TooltipProvider } from '#/components/ui/tooltip'
+import { SidebarProvider } from '#/components/ui/sidebar'
+import AppLayout from '#/components/AppLayout'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -53,8 +50,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
-        <Header />
-        {children}
+        {/* <Header />
+        
         <Footer />
         <TanStackDevtools
           config={{
@@ -67,7 +64,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
             TanStackQueryDevtools,
           ]}
-        />
+        /> */}
+        <TooltipProvider>
+          <SidebarProvider>
+            <AppLayout >
+              {children}
+            </AppLayout>
+          </SidebarProvider>
+        </TooltipProvider>
         <Scripts />
       </body>
     </html>
