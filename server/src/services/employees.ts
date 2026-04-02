@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Employee, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -7,24 +7,24 @@ function serializeEmployee(e: any) {
     return Object.assign({}, e, { tgId: e.tgId === null ? null : String(e.tgId) });
 }
 
-export async function getAllEmployees() {
+export async function getAllEmployees(): Promise<Employee[]> {
     const rows = await prisma.employee.findMany({ orderBy: { id: 'asc' } });
     return rows.map(serializeEmployee);
 }
 
-export async function getEmployeeById(id: string | number) {
+export async function getEmployeeById(id: string | number): Promise<Employee | null> {
     const numId = Number(id);
     const row = await prisma.employee.findUnique({ where: { id: numId } });
     return serializeEmployee(row);
 }
 
-export async function getEmployeeByTgId(tgId: string | number | bigint) {
+export async function getEmployeeByTgId(tgId: string | number | bigint): Promise<Employee | null> {
     const val = tgId == null ? null : BigInt(String(tgId));
     const row = await prisma.employee.findFirst({ where: { tgId: val } });
     return serializeEmployee(row);
 }
 
-export async function createEmployee(data: any) {
+export async function createEmployee(data: any): Promise<Employee> {
     const payload: any = {
         tgId: data.tgId != null ? String(data.tgId) : null,
         name: data.name ?? ''
@@ -33,7 +33,7 @@ export async function createEmployee(data: any) {
     return serializeEmployee(created);
 }
 
-export async function updateEmployeeById(id: string | number, data: any) {
+export async function updateEmployeeById(id: string | number, data: any): Promise<Employee | null> {
     const numId = Number(id);
     try {
         const payload: any = {};
@@ -46,7 +46,7 @@ export async function updateEmployeeById(id: string | number, data: any) {
     }
 }
 
-export async function deleteEmployeeById(id: string | number) {
+export async function deleteEmployeeById(id: string | number): Promise<boolean> {
     const numId = Number(id);
     try {
         await prisma.employee.delete({ where: { id: numId } });

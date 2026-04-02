@@ -1,16 +1,37 @@
-import { Bot, Context, session } from "grammy";
+import { Bot, Context, session, webhookCallback } from "grammy";
 import type { SessionFlavor } from "grammy";
 import { Menu } from "@grammyjs/menu";
+import { config } from "dotenv";
+
+config();
 
 type MySession = {
     state: 'idle' | 'waiting_for_harvest_amount' | 'waiting_for_confirmation' | 'waiting_for_view_option';
     harvestAmount?: number;
 };
 
+type Employee = {
+    id: number;
+    tgId: number;
+}
+
+type Harvest = {
+    id: number;
+    quantity: number;
+    createdAt: string;
+    loggedBy: Employee;
+}
+
+// Create an instance of the `Bot` class and pass your bot token to it.
+const token = process.env.BOT_TOKEN;
+if (!token) throw new Error("BOT_TOKEN is unset");
+
 type MyContext = Context & SessionFlavor<MySession>;
 
 // Create an instance of the `Bot` class and pass your bot token to it.
-const bot = new Bot<MyContext>("8588782715:AAFaFdc7ckXcWRcexdBZK17kUdXYif4FaFQ"); // <-- put your bot token between the ""
+const bot = new Bot<MyContext>(token); // <-- put your bot token between the ""
+
+// export default webhookCallback(bot, "https");
 
 // Use session middleware
 bot.use(session({ initial: (): MySession => ({ state: 'idle' }) }));
@@ -74,7 +95,7 @@ bot.on("callback_query:data", (ctx) => {
 });
 
 // Handle other messages.
-bot.on("message", (ctx) => {
+bot.on("message", async (ctx) => {
     const session = ctx.session;
     if (session.state === 'waiting_for_harvest_amount') {
         const amount = parseFloat(ctx.message.text!);
@@ -89,7 +110,40 @@ bot.on("message", (ctx) => {
         const text = ctx.message.text!.toLowerCase();
         if (text === 'yes') {
             // tbc send to BE
-            ctx.reply("Harvest logged successfully!");
+            const createHarvest = async (tgId: number, quantity: number) => {
+                let employeeId = 1;
+
+                /* const employee = await fetch(`${process.env.BASE_URL}/employees/tg/${tgId}`)
+                if (!employee.ok) {
+                    const newEmployee = await fetch(`${process.env.BASE_URL}/employees`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tgId })
+                    });
+                    if (!newEmployee.ok) throw new Error('Failed to create employee');
+                    const createdEmployee: Employee = await newEmployee.json() as Employee;
+                    employeeId = createdEmployee.id;
+                } else {
+                    const existingEmployee: Employee = await employee.json() as Employee;
+                    employeeId = existingEmployee.id;
+                } */
+
+                const harvestResponse = await fetch(`${process.env.BASE_URL}/harvests`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loggedBy: employeeId, quantity })
+                });
+                if (!harvestResponse.ok) throw new Error(`Failed to create harvest: ${await harvestResponse.text()} `);
+                return await harvestResponse.json() as Harvest;
+            }
+
+            const createdHarvest = await createHarvest(ctx.from.id, session.harvestAmount as number);
+
+            ctx.reply(`Harvest logged successfully!!\n
+Quantity(g): ${createdHarvest.quantity}
+Date: ${new Date(createdHarvest.createdAt).toLocaleDateString()}
+Time: ${new Date(createdHarvest.createdAt).toLocaleTimeString()}`
+            );
             session.state = 'idle';
         } else if (text === 'no') {
             session.state = 'waiting_for_harvest_amount';

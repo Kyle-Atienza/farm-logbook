@@ -1,17 +1,17 @@
-import { PrismaClient } from '@prisma/client';
+import { Harvest, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function getAllHarvests() {
+export async function getAllHarvests(): Promise<Harvest[]> {
     return prisma.harvest.findMany({ orderBy: { id: 'asc' } });
 }
 
-export async function getHarvestById(id: string | number) {
+export async function getHarvestById(id: string | number): Promise<Harvest | null> {
     const numId = Number(id);
     return prisma.harvest.findUnique({ where: { id: numId } });
 }
 
-export async function createHarvest(data: any) {
+export async function createHarvest(data: any): Promise<Harvest> {
     const payload: any = {
         quantity: data.quantity != null ? Number(data.quantity) : null,
         loggedBy: data.loggedBy != null ? Number(data.loggedBy) : null,
@@ -19,7 +19,7 @@ export async function createHarvest(data: any) {
     return prisma.harvest.create({ data: payload });
 }
 
-export async function updateHarvestById(id: string | number, data: any) {
+export async function updateHarvestById(id: string | number, data: any): Promise<Harvest | null> {
     const numId = Number(id);
     try {
         const payload: any = {};
@@ -32,7 +32,7 @@ export async function updateHarvestById(id: string | number, data: any) {
     }
 }
 
-export async function deleteHarvestById(id: string | number) {
+export async function deleteHarvestById(id: string | number): Promise<boolean> {
     const numId = Number(id);
     try {
         await prisma.harvest.delete({ where: { id: numId } });

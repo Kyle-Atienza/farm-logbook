@@ -15,15 +15,9 @@ import {
 } from "#/components/ui/chart"
 import { ButtonGroup } from "./ui/button-group"
 import { Button } from "./ui/button"
-import { useQuery } from "@tanstack/react-query"
-import { config } from "#/config"
+import type { Harvest } from "#/routes"
 
-interface Harvest {
-    id: number
-    createdAt: string
-    quantity: number | null
-    loggedBy: number
-}
+
 
 export const description = "An interactive bar chart"
 
@@ -38,22 +32,11 @@ type GroupMode = 'daily' | 'weekly' | 'monthly'
 
 const MAX_BARS = 60
 
-export function HarvestsChart() {
-    const { data: harvestData } = useQuery<Harvest[]>({
-        queryKey: ["harvests"],
-        queryFn: async () => {
-            const response = await fetch(`${config.API_URL}/harvests`)
-            if (!response.ok) {
-                throw new Error("Network response was not ok")
-            }
-            return response.json()
-        }
-    })
-
+export function HarvestChart({ data }: { data: Harvest[] }) {
     const [groupMode, setGroupMode] = React.useState<GroupMode>('daily')
 
     const processedData = React.useMemo(() => {
-        if (!harvestData) return []
+        if (!data) return []
 
         const now = new Date()
         const periods: { date: string; harvest: number }[] = []
@@ -63,7 +46,7 @@ export function HarvestsChart() {
                 const date = new Date(now)
                 date.setDate(now.getDate() - i)
                 const key = date.toISOString().split('T')[0]
-                const total = harvestData
+                const total = data
                     .filter((h: Harvest) => new Date(h.createdAt).toISOString().split('T')[0] === key)
                     .reduce((sum: number, h: Harvest) => sum + (h.quantity || 0), 0)
                 periods.push({ date: key, harvest: total })
@@ -79,7 +62,7 @@ export function HarvestsChart() {
                 const key = date.toISOString().split('T')[0]
                 const weekEnd = new Date(date)
                 weekEnd.setDate(date.getDate() + 6)
-                const total = harvestData
+                const total = data
                     .filter((h: Harvest) => {
                         const hDate = new Date(h.createdAt)
                         return hDate >= date && hDate <= weekEnd
@@ -94,7 +77,7 @@ export function HarvestsChart() {
                 date.setDate(1) // First day of month
                 const key = date.toISOString().split('T')[0]
                 const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0)
-                const total = harvestData
+                const total = data
                     .filter((h: Harvest) => {
                         const hDate = new Date(h.createdAt)
                         return hDate >= date && hDate <= monthEnd
@@ -105,7 +88,7 @@ export function HarvestsChart() {
         }
 
         return periods
-    }, [harvestData, groupMode])
+    }, [data, groupMode])
 
     const getTickFormatter = (mode: GroupMode) => (value: string) => {
         const date = new Date(value)
