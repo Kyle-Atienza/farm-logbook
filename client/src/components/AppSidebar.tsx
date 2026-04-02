@@ -6,13 +6,18 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
+    SidebarHeader,
 } from "@/components/ui/sidebar"
 import { HomeIcon, FileTextIcon, SettingsIcon } from "lucide-react"
 
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon">
-            {/* <SidebarHeader /> */}
+            <SidebarHeader>
+                <div className="p-2">
+                    <img className="w-10" src="/eandb-farm-dark.png" alt="logo" />
+                </div>
+            </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarMenu>
