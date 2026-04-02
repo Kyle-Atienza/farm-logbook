@@ -2,8 +2,6 @@ import { HarvestChart } from '#/components/HarvestChart'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { config } from "#/config"
-import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
-import { TrendingUpIcon } from 'lucide-react'
 import HarvestToday from '#/components/HarvestToday'
 
 export const Route = createFileRoute('/')({ component: App })
