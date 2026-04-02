@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { config } from "#/config"
 import HarvestToday from '#/components/HarvestToday'
+import WeatherInfo from '#/components/WeatherInfo'
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -27,8 +28,9 @@ function App() {
 
   return (
     <div className='grid gap-4'>
-      <div>
+      <div className='flex gap-4'>
         <HarvestToday data={harvestData || []} />
+        <WeatherInfo />
       </div>
       <HarvestChart data={harvestData || []} />
     </div>

@@ -43,7 +43,7 @@ export default function HarvestToday({ data }: { data: Harvest[] }) {
                 "text-slate-500";
 
     return (
-        <Card className="py-0 max-w-3xs gap-0">
+        <Card className="py-0 w-2xs gap-0">
             <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
                 <div className="flex flex-1 justify-between items-center gap-1 px-6 pt-4 pb-3">
                     <CardTitle className="flex items-center gap-2">
