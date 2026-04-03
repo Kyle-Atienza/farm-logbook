@@ -1,0 +1,529 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Farm Logbook API",
+    "version": "0.1.0",
+    "description": "API for managing farm harvests and employees"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Harvest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Unique identifier"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "quantity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Harvest quantity"
+          },
+          "loggedBy": {
+            "type": "number",
+            "description": "Employee ID who logged the harvest"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "loggedBy"
+        ]
+      },
+      "HarvestCreate": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Harvest quantity"
+          },
+          "loggedBy": {
+            "type": "number",
+            "description": "Employee ID who logged the harvest"
+          }
+        },
+        "required": [
+          "loggedBy"
+        ]
+      },
+      "HarvestUpdate": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "nullable": true,
+            "description": "Harvest quantity"
+          },
+          "loggedBy": {
+            "type": "number",
+            "description": "Employee ID who logged the harvest"
+          }
+        }
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Unique identifier"
+          },
+          "tgId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Telegram ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Employee name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "EmployeeCreate": {
+        "type": "object",
+        "properties": {
+          "tgId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Telegram ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Employee name"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "EmployeeUpdate": {
+        "type": "object",
+        "properties": {
+          "tgId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Telegram ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Employee name"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/employees": {
+      "get": {
+        "summary": "Get all employees",
+        "tags": [
+          "Employees"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all employees",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Employee"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new employee",
+        "tags": [
+          "Employees"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/tg/{tgId}": {
+      "get": {
+        "summary": "Get an employee by Telegram ID",
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tgId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Telegram ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employee details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}": {
+      "get": {
+        "summary": "Get an employee by ID",
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Employee ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employee details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an employee by ID",
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Employee ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an employee by ID",
+        "tags": [
+          "Employees"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Employee ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Employee deleted successfully"
+          },
+          "404": {
+            "description": "Employee not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/harvests": {
+      "get": {
+        "summary": "Get all harvests",
+        "tags": [
+          "Harvests"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all harvests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Harvest"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new harvest",
+        "tags": [
+          "Harvests"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HarvestCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Harvest created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Harvest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/harvests/{id}": {
+      "get": {
+        "summary": "Get a harvest by ID",
+        "tags": [
+          "Harvests"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Harvest ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Harvest details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Harvest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Harvest not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a harvest by ID",
+        "tags": [
+          "Harvests"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Harvest ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HarvestUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Harvest updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Harvest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Harvest not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a harvest by ID",
+        "tags": [
+          "Harvests"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Harvest ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Harvest deleted successfully"
+          },
+          "404": {
+            "description": "Harvest not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

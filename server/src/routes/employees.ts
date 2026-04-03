@@ -60,7 +60,10 @@ router.get('/', async (req: Request, res: Response) => {
  */
 // lookup by Telegram ID (tgId)
 router.get('/tg/:tgId', async (req: Request, res: Response) => {
-    const e = await getEmployeeByTgId(req.params.tgId);
+    const tgId = req.params.tgId;
+    if (!tgId) return res.status(400).json({ error: 'Telegram ID is required' });
+
+    const e = await getEmployeeByTgId(tgId);
     if (!e) return res.status(404).json({ error: 'Employee not found' });
     res.json(e);
 });
@@ -93,7 +96,10 @@ router.get('/tg/:tgId', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 router.get('/:id', async (req: Request, res: Response) => {
-    const e = await getEmployeeById(req.params.id);
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: 'Employee ID is required' });
+
+    const e = await getEmployeeById(id);
     if (!e) return res.status(404).json({ error: 'Employee not found' });
     res.json(e);
 });
@@ -157,7 +163,10 @@ router.post('/', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 router.put('/:id', async (req: Request, res: Response) => {
-    const updated = await updateEmployeeById(req.params.id, req.body || {});
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: 'Employee ID is required' });
+
+    const updated = await updateEmployeeById(id, req.body || {});
     if (!updated) return res.status(404).json({ error: 'Employee not found' });
     res.json(updated);
 });
@@ -186,7 +195,10 @@ router.put('/:id', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', async (req: Request, res: Response) => {
-    const ok = await deleteEmployeeById(req.params.id);
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: 'Employee ID is required' });
+
+    const ok = await deleteEmployeeById(id);
     if (!ok) return res.status(404).json({ error: 'Employee not found' });
     res.status(204).end();
 });

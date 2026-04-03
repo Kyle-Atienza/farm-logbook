@@ -58,7 +58,10 @@ router.get('/', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 router.get('/:id', async (req: Request, res: Response) => {
-    const h = await getHarvestById(req.params.id);
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: 'Harvest ID is required' });
+
+    const h = await getHarvestById(id);
     if (!h) return res.status(404).json({ error: 'Harvest not found' });
     res.json(h);
 });
@@ -122,7 +125,10 @@ router.post('/', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 router.put('/:id', async (req: Request, res: Response) => {
-    const updated = await updateHarvestById(req.params.id, req.body || {});
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: 'Harvest ID is required' });
+
+    const updated = await updateHarvestById(id, req.body || {});
     if (!updated) return res.status(404).json({ error: 'Harvest not found' });
     res.json(updated);
 });
@@ -151,7 +157,10 @@ router.put('/:id', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', async (req: Request, res: Response) => {
-    const ok = await deleteHarvestById(req.params.id);
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: 'Harvest ID is required' });
+
+    const ok = await deleteHarvestById(id);
     if (!ok) return res.status(404).json({ error: 'Harvest not found' });
     res.status(204).end();
 });
