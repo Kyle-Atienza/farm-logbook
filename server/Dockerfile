@@ -1,23 +1,30 @@
-# 1. Use official Node base image
-FROM node:20-alpine
+# -------- BUILD STAGE --------
+FROM node:20-alpine AS builder
 
-# 2. Set working directory inside container
 WORKDIR /app
 
 RUN apk add --no-cache openssl
 
-# 3. Copy package files and install dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+
+# -------- RUNTIME STAGE --------
+FROM node:20-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache openssl
+
 COPY package.json package-lock.json ./
 RUN npm ci --production
 
-# 4. Copy rest of application code
-COPY . .
+# copy only built files
+COPY --from=builder /app/dist ./dist
 
-# 5. Build TypeScript
-RUN npm run build
-
-# 6. Expose port (same as server listen)
 EXPOSE 4000
 
-# 7. Command to run service
 CMD ["node", "dist/index.js"]
