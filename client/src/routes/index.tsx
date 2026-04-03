@@ -4,15 +4,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { config } from "#/config"
 import HarvestToday from '#/components/HarvestToday'
 import WeatherInfo from '#/components/WeatherInfo'
+import type { Harvest } from '#/types/harvest'
 
 export const Route = createFileRoute('/')({ component: App })
-
-export interface Harvest {
-  id: number
-  createdAt: string
-  quantity: number | null
-  loggedBy: number
-}
 
 function App() {
   const { data: harvestData } = useQuery<Harvest[]>({

@@ -1,6 +1,6 @@
 import { MoveRightIcon, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import type { Harvest } from "#/routes";
+import type { Harvest } from "#/types/harvest";
 
 export default function HarvestToday({ data }: { data: Harvest[] }) {
     const now = new Date();

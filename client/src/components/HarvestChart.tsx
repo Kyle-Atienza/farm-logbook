@@ -15,7 +15,7 @@ import {
 } from "#/components/ui/chart"
 import { ButtonGroup } from "./ui/button-group"
 import { Button } from "./ui/button"
-import type { Harvest } from "#/routes"
+import type { Harvest } from "#/types/harvest"
 
 
 
