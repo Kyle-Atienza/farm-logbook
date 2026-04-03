@@ -24,7 +24,13 @@ RUN apk add --no-cache openssl
 COPY package.json package-lock.json ./
 RUN npm ci --production
 
-# copy only built files
+# Copy Prisma schema (needed for generate)
+COPY prisma ./prisma/
+
+# 🔑 Generate Prisma client in runtime
+RUN npx prisma generate
+
+# Copy built app
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 4000
