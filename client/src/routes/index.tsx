@@ -24,7 +24,7 @@ function App() {
     <div className='grid gap-4'>
       <div className='flex gap-4'>
         <HarvestToday data={harvestData || []} />
-        <WeatherInfo />
+        {/* <WeatherInfo /> */}
       </div>
       <HarvestChart data={harvestData || []} />
     </div>

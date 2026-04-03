@@ -99,7 +99,7 @@ bot.on("message", async (ctx) => {
                     const existingEmployee: Employee = await employee.json() as Employee;
                     employeeId = existingEmployee.id;
                 } */
-                const harvestResponse = await fetch(`${process.env.BASE_URL}/harvests`, {
+                const harvestResponse = await fetch(`${process.env.API_URL}/harvests`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ loggedBy: employeeId, quantity })
