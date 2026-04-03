@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "tsc",
+    "build": "npx tsc",
     "dev": "concurrently \"tsc --watch\" \"nodemon dist/bot.js\""
   },
   "type": "module",
