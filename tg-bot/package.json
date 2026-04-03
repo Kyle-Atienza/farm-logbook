@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "concurrently \"tsc --watch\" \"nodemon dist/bot.js\""
+    "dev": "concurrently \"tsc --watch\" \"nodemon bot.js\""
   },
   "type": "module",
   "devDependencies": {

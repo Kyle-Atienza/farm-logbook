@@ -17,8 +17,6 @@ import { ButtonGroup } from "./ui/button-group"
 import { Button } from "./ui/button"
 import type { Harvest } from "#/types/harvest"
 
-
-
 export const description = "An interactive bar chart"
 
 const chartConfig = {
