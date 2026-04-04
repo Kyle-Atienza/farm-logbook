@@ -16,7 +16,7 @@ const config = defineConfig({
     viteReact(),
   ],
   preview: {
-    allowedHosts: ['*'],
+    allowedHosts: true,
   }
 })
 
